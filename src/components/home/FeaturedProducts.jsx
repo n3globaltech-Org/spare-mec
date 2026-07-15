@@ -4,14 +4,15 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
-import { ProductCard } from '../ProductCard';
+import { ProductCardByVariant, ProductGrid } from '../ProductGrid';
 
 const featuredCarImg = '/assets/sections/featured_car.png';
 
 // `products` is passed from the server Home page (already fetched + mapped) so the cards are in
 // the initial SSR HTML (good for SEO) and there's no client-side fetch.
-export default function FeaturedProducts({ products = [] }) {
+export default function FeaturedProducts({ products = [], variant = 'large' }) {
     const list = products.slice(0, 6);
+    const compact = variant === 'compact';
     const sliderRef = useRef(null);
 
     const handleScroll = (direction) => {
@@ -36,7 +37,7 @@ export default function FeaturedProducts({ products = [] }) {
                     <div className="relative z-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
                         <div className="max-w-[85%] md:max-w-[55%] flex flex-col">
                             <div className="flex items-center gap-2 mb-2.5">
-                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#FBEE21] md:text-accent-500">FEATURE PRODUCTS</span>
+                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#FBEE21] md:text-accent-500">TRENDING PRODUCTS</span>
                                 <span className="w-8 h-[2px] bg-[#FBEE21] md:bg-accent-500" />
                             </div>
                             <h2 className="text-[28px] sm:text-3xl md:text-[2.65rem] font-display font-black leading-[1.05] tracking-tight text-white md:text-neutral-900">
@@ -57,14 +58,16 @@ export default function FeaturedProducts({ products = [] }) {
                             </Link>
                         </div>
 
-                        <div className="hidden md:flex items-center gap-2.5 self-end md:self-auto mb-1 md:mb-0">
-                            <button onClick={() => handleScroll('left')} aria-label="Previous slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-all duration-300 md:bg-neutral-50 md:border-neutral-200/80 md:text-neutral-600 md:hover:bg-neutral-100">
-                                <FiArrowLeft size={18} />
-                            </button>
-                            <button onClick={() => handleScroll('right')} aria-label="Next slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FBEE21] text-neutral-900 shadow-sm transition-all duration-300 hover:scale-105 hover:bg-[#e0d51d]">
-                                <FiArrowRight size={18} />
-                            </button>
-                        </div>
+                        {!compact && (
+                            <div className="hidden md:flex items-center gap-2.5 self-end md:self-auto mb-1 md:mb-0">
+                                <button onClick={() => handleScroll('left')} aria-label="Previous slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-all duration-300 md:bg-neutral-50 md:border-neutral-200/80 md:text-neutral-600 md:hover:bg-neutral-100">
+                                    <FiArrowLeft size={18} />
+                                </button>
+                                <button onClick={() => handleScroll('right')} aria-label="Next slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FBEE21] text-neutral-900 shadow-sm transition-all duration-300 hover:scale-105 hover:bg-[#e0d51d]">
+                                    <FiArrowRight size={18} />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 md:hidden z-20">
@@ -74,22 +77,24 @@ export default function FeaturedProducts({ products = [] }) {
                     </div>
                 </div>
 
-                {/* DESKTOP/TABLET: Horizontal Slider Carousel */}
+                {/* DESKTOP/TABLET: large cards keep the showroom carousel; compact cards use a four-column grid. */}
                 <div className="hidden md:block relative overflow-visible">
-                    <div ref={sliderRef} className="flex gap-6 overflow-x-auto no-scrollbar pb-8 scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        {list.map((p, i) => (
-                            <div key={p.slug} className="w-[280px] shrink-0 select-none">
-                                <ProductCard product={p} index={i} forceCol />
-                            </div>
-                        ))}
-                    </div>
+                    {compact ? (
+                        <ProductGrid products={list} variant={variant} />
+                    ) : (
+                        <div ref={sliderRef} className="flex gap-6 overflow-x-auto no-scrollbar pb-8 scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                            {list.map((p, i) => (
+                                <div key={p.slug} className="w-[280px] shrink-0 select-none">
+                                    <ProductCardByVariant variant={variant} product={p} index={i} forceCol />
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
-                {/* MOBILE: Horizontal Card Stack */}
-                <div className="mt-4 flex flex-col gap-3.5 md:hidden">
-                    {list.slice(0, 4).map((p, i) => (
-                        <ProductCard key={p.slug} product={p} index={i} />
-                    ))}
+                {/* MOBILE: the section variant alone controls one-column large or two-column compact. */}
+                <div className="mt-4 md:hidden">
+                    <ProductGrid products={list.slice(0, compact ? 6 : 4)} variant={variant} />
                 </div>
 
                 <div className="mt-6 flex justify-center">

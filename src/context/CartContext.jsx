@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 
 // Cart line: { id, slug, name, partNumber, price (plain number|null), currency, image, quantity }
 const CartContext = createContext(null);
@@ -19,6 +19,7 @@ function reducer(state, action) {
             return [...state, {
                 id: p.id, slug: p.slug, name: p.name, partNumber: p.partNumber || null,
                 price: p.price ?? null, currency: p.currency || 'AED', image: p.image || null,
+                selectedOptions: p.selectedOptions || null,
                 quantity: action.qty || 1,
             }];
         }
@@ -35,7 +36,7 @@ function reducer(state, action) {
 
 export function CartProvider({ children }) {
     const [items, dispatch] = useReducer(reducer, []);
-    const hydrated = useRef(false);
+    const [hydrated, setHydrated] = useState(false);
 
     // Load once on mount (client only) — keeps SSR markup stable (no hydration mismatch).
     useEffect(() => {
@@ -43,17 +44,30 @@ export function CartProvider({ children }) {
             const raw = localStorage.getItem(KEY);
             if (raw) dispatch({ type: 'HYDRATE', items: JSON.parse(raw) });
         } catch { /* ignore */ }
-        hydrated.current = true;
+        setHydrated(true);
     }, []);
 
     useEffect(() => {
-        if (!hydrated.current) return;
+        // `hydrated` is render state rather than a ref: the initial empty render therefore cannot
+        // overwrite localStorage while the load effect above is still dispatching the saved cart.
+        if (!hydrated) return;
         try { localStorage.setItem(KEY, JSON.stringify(items)); } catch { /* ignore */ }
-    }, [items]);
+    }, [hydrated, items]);
+
+    // Keep two tabs of the same storefront in sync as customers add/remove products.
+    useEffect(() => {
+        const syncCart = (event) => {
+            if (event.key !== KEY || event.newValue === null) return;
+            try { dispatch({ type: 'HYDRATE', items: JSON.parse(event.newValue) }); } catch { /* ignore */ }
+        };
+        window.addEventListener('storage', syncCart);
+        return () => window.removeEventListener('storage', syncCart);
+    }, []);
 
     const pricedItems = items.filter((i) => i.price != null);
     const value = {
         items,
+        hydrated,
         add: (product, qty = 1) => dispatch({ type: 'ADD', product, qty }),
         setQty: (id, qty) => dispatch({ type: 'SET_QTY', id, qty }),
         remove: (id) => dispatch({ type: 'REMOVE', id }),

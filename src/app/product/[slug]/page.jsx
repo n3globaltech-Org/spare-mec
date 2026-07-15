@@ -3,6 +3,7 @@ import { fetchProduct, fetchRelated } from '@/lib/catalog';
 import { formatMoney } from '@/lib/money';
 import { ProductActions } from '@/components/ProductActions';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductGallery } from '@/components/ProductGallery';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import AvailabilityBadge from '@/components/ui/AvailabilityBadge';
 
@@ -59,7 +60,7 @@ export default async function ProductPage({ params }) {
         mpn: product.partNumber || undefined,
         brand: product.brand ? { '@type': 'Brand', name: product.brand } : undefined,
         description: product.shortDescription || product.description || undefined,
-        image: product.image ? [product.image] : undefined,
+        image: product.images?.length ? product.images : (product.image ? [product.image] : undefined),
         offers: showPrice
             ? {
                 '@type': 'Offer',
@@ -91,14 +92,11 @@ export default async function ProductPage({ params }) {
             </div>
 
             <div className="container-x py-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="card aspect-square overflow-hidden bg-neutral-100">
-                    {product.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full grid place-items-center text-neutral-300">No image</div>
-                    )}
-                </div>
+                <ProductGallery
+                    images={product.images}
+                    primaryImage={product.image}
+                    productName={product.name}
+                />
 
                 <div>
                     {product.brand && <div className="eyebrow">{product.brand}</div>}

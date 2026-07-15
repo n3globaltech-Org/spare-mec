@@ -19,7 +19,11 @@ export default function BrakeAnimation() {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        const handleResize = () => {
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const saveData = Boolean(navigator.connection?.saveData);
+            setIsMobile(window.innerWidth < 768 && !reducedMotion && !saveData);
+        };
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -35,6 +39,7 @@ export default function BrakeAnimation() {
 
     const targetProgressRef = useRef(0);
     const currentProgressRef = useRef(0);
+    const lastReportedProgressRef = useRef(-1);
     const [activeProgress, setActiveProgress] = useState(0);
 
     const pad = (num) => String(num).padStart(3, '0');
@@ -45,7 +50,7 @@ export default function BrakeAnimation() {
         const el = containerRef.current;
         const io = new IntersectionObserver(
             (entries) => { if (entries[0].isIntersecting) { setNearViewport(true); io.disconnect(); } },
-            { rootMargin: '150% 0px' }
+            { rootMargin: '50% 0px' }
         );
         io.observe(el);
         return () => io.disconnect();
@@ -131,7 +136,10 @@ export default function BrakeAnimation() {
             const diff = target - current;
             currentProgressRef.current += diff * 0.04;
             if (Math.abs(diff) < 0.0001) currentProgressRef.current = target;
-            setActiveProgress(currentProgressRef.current);
+            if (Math.abs(currentProgressRef.current - lastReportedProgressRef.current) >= 0.01) {
+                lastReportedProgressRef.current = currentProgressRef.current;
+                setActiveProgress(currentProgressRef.current);
+            }
             drawCanvas(currentProgressRef.current);
             animFrameId = requestAnimationFrame(renderLoop);
         };

@@ -28,8 +28,8 @@ export function ConfirmationClient({ orderNumber }) {
     return (
         <div className="container-x py-16 max-w-lg mx-auto text-center">
             <FiCheckCircle className="w-14 h-14 text-emerald-500 mx-auto" />
-            <h1 className="mt-4 text-2xl font-display font-bold">Thank you — your order is in!</h1>
-            <p className="mt-2 text-neutral-500">Our team will confirm and follow up personally, usually within a few hours.</p>
+            <h1 className="mt-4 text-2xl font-display font-bold">Thank you! Your order has been received successfully.</h1>
+            <p className="mt-2 text-neutral-500">Our customer support team will review your request and contact you shortly to confirm availability, pricing, and delivery details.</p>
 
             {orderNumber && (
                 <div className="card p-5 mt-6 text-left">

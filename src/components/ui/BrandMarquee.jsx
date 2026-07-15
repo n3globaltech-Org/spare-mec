@@ -18,6 +18,8 @@ export default function BrandMarquee({ className = '', speed = 'animate-marquee-
                         src={b.src}
                         alt={b.name}
                         title={b.name}
+                        loading="lazy"
+                        decoding="async"
                         className="h-9 w-auto shrink-0 object-contain opacity-80 hover:opacity-100 transition-all duration-300 md:h-11"
                     />
                 ))}

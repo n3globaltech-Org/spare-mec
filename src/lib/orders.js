@@ -7,13 +7,14 @@ import { publicApi } from "./api";
  *
  * createOrder → { orderNumber, status, currency, total, itemCount }
  */
-export async function createOrder({ source = "website", items, customer, delivery, sourceReference } = {}) {
+export async function createOrder({ source = "website", items, customer, delivery, notes, sourceReference } = {}) {
     const payload = {
         source,
         items: (items || []).map((i) => ({ productId: i.productId, quantity: i.quantity || 1 })),
     };
     if (customer && (customer.name || customer.phone || customer.email)) payload.customer = customer;
     if (delivery) payload.delivery = delivery;
+    if (notes) payload.notes = notes;
     if (sourceReference) payload.sourceReference = sourceReference;
     const { data } = await publicApi.post("/orders", payload);
     return data.data;

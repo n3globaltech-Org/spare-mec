@@ -82,6 +82,8 @@ function CategoryGridCard({ category, index }) {
                     <img
                         src={art.image}
                         alt={category.name}
+                        loading="lazy"
+                        decoding="async"
                         className="absolute bottom-0 right-[-8%] h-full w-[128%] object-contain object-bottom transition-transform duration-500 group-hover:scale-105"
                     />
                 </div>
@@ -96,10 +98,10 @@ function CategoryGridCard({ category, index }) {
 }
 
 export default async function CategoriesPage() {
-    let categories = [];
-    try { categories = await fetchCategories(); } catch { /* API optional at render */ }
+    let categories = null;
+    try { categories = await fetchCategories(); } catch { /* Render a recoverable error state below. */ }
 
-    const tree = buildCategoryTree(categories).filter(isReal);
+    const tree = categories ? buildCategoryTree(categories).filter(isReal) : [];
 
     return (
         <>
@@ -118,8 +120,14 @@ export default async function CategoriesPage() {
                                 <CategoryGridCard key={parent.id} category={parent} index={index} />
                             ))}
                         </div>
+                    ) : categories === null ? (
+                        <div className="py-16 text-center" role="alert">
+                            <p className="font-semibold text-neutral-800">We couldn&apos;t load the categories.</p>
+                            <p className="mt-1 text-sm text-neutral-500">Please check your connection and try again.</p>
+                            <Link href="/categories" className="btn-primary mt-5 inline-flex">Try again</Link>
+                        </div>
                     ) : (
-                        <p className="text-center text-neutral-500 py-16">Categories are loading — please check back shortly.</p>
+                        <p className="py-16 text-center text-neutral-500">No product categories are available yet.</p>
                     )}
                 </div>
             </section>

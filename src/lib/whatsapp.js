@@ -43,6 +43,12 @@ export const buildOrderMessage = ({ orderNumber, product, items, vehicle, curren
         if (it.quantity) line += `  ×${it.quantity}`;
         if (it.unitPrice != null) line += `  — ${formatMoney(it.unitPrice * (it.quantity || 1), currency)}`;
         lines.push(line);
+        const options = it.selectedOptions || it.options;
+        if (Array.isArray(options)) {
+            options.filter(Boolean).forEach((option) => lines.push(`   • ${typeof option === "string" ? option : `${option.label || option.name}: ${option.value}`}`));
+        } else if (options && typeof options === "object") {
+            Object.entries(options).forEach(([label, value]) => lines.push(`   • ${label}: ${value}`));
+        }
     });
 
     const v = vehicle && [vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(" ");

@@ -17,14 +17,13 @@ import { orderWaLink, productWaLink } from '@/lib/whatsapp';
  */
 export function ProductActions({ product }) {
     const router = useRouter();
-    const { add } = useCart();
-    const [added, setAdded] = useState(false);
+    const { items, add } = useCart();
     const [loading, setLoading] = useState(false);
+    const added = items.some((item) => item.id === product.id);
 
     const handleAdd = () => {
         if (added) { router.push('/checkout'); return; }
         add(product, 1);
-        setAdded(true);
     };
 
     const handleWhatsApp = async () => {

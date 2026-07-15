@@ -1,14 +1,14 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { fetchAllProducts, fetchCategories } from '@/lib/catalog';
-import { ProductCard } from '@/components/ProductCard';
+import { ProductGrid } from '@/components/ProductGrid';
 import { genericWaLink } from '@/lib/whatsapp';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://sparemec.ae';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
     try {
         const cats = await fetchCategories();
         const c = cats.find((x) => x.slug === params.slug);
@@ -18,17 +18,23 @@ export async function generateMetadata({ params }) {
             title: c.name,
             description: `Shop ${c.name} — genuine & OEM-quality auto spare parts.`,
             alternates: { canonical: `/category/${params.slug}` },
+            ...(Number(searchParams?.page) > 1 ? { robots: { index: false, follow: true } } : {}),
         };
     } catch {
         return {};
     }
 }
 
-export default async function CategoryPage({ params }) {
+export default async function CategoryPage({ params, searchParams }) {
+    const requestedPage = Number(searchParams?.page);
+    const page = Number.isFinite(requestedPage) ? Math.max(1, Math.floor(requestedPage)) : 1;
     // Distinguish a genuine "no such category" (→ real 404) from an API outage (→ error state).
     // `null` means the fetch failed; an empty array means "reachable but no such category".
-    let cats = null;
-    try { cats = await fetchCategories(); } catch { cats = null; }
+    const [categoriesResult, productsResult] = await Promise.allSettled([
+        fetchCategories(),
+        fetchAllProducts({ categorySlug: params.slug, page, limit: 24 }),
+    ]);
+    const cats = categoriesResult.status === 'fulfilled' ? categoriesResult.value : null;
     const category = cats ? cats.find((c) => c.slug === params.slug) : null;
     if (cats && !category) notFound();
 
@@ -41,11 +47,12 @@ export default async function CategoryPage({ params }) {
     const subNav = children.length ? children : siblings;
     const subParent = children.length ? category : parent; // "All X" target for the chip row
 
-    let products = null;
-    try {
-        const r = await fetchAllProducts({ categorySlug: params.slug, limit: 48 });
-        products = r.products;
-    } catch { products = null; }
+    const products = productsResult.status === 'fulfilled' ? productsResult.value.products : null;
+    const pagination = productsResult.status === 'fulfilled' ? productsResult.value.pagination : null;
+
+    if (pagination?.totalPages > 0 && page > pagination.totalPages) {
+        redirect(`/category/${params.slug}?page=${pagination.totalPages}`);
+    }
 
     const apiDown = cats === null || products === null;
     const name = category?.name || params.slug;
@@ -96,7 +103,7 @@ export default async function CategoryPage({ params }) {
                     <h1 className="font-display text-2xl md:text-3xl font-black tracking-tight text-neutral-950">{category?.name || 'Category'}</h1>
                 </div>
                 {!apiDown && (
-                    <p className="text-sm text-neutral-500"><span className="font-black text-neutral-950">{products.length}</span> part{products.length === 1 ? '' : 's'}</p>
+                    <p className="text-sm text-neutral-500"><span className="font-black text-neutral-950">{pagination?.total ?? products.length}</span> part{(pagination?.total ?? products.length) === 1 ? '' : 's'}</p>
                 )}
             </div>
 
@@ -118,14 +125,20 @@ export default async function CategoryPage({ params }) {
                     <a href={genericWaLink()} target="_blank" rel="noopener noreferrer" className="btn btn-wa">Ask us on WhatsApp</a>
                 </div>
             ) : products.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {products.map((p) => <ProductCard key={p.id} product={p} />)}
-                </div>
+                <ProductGrid products={products} variant="large" desktopColumns="catalogue" />
             ) : (
                 <div className="py-16 text-center text-neutral-600">
                     <p className="mb-3">No products in this category yet.</p>
                     <a href={genericWaLink()} target="_blank" rel="noopener noreferrer" className="btn btn-wa">Ask us on WhatsApp</a>
                 </div>
+            )}
+
+            {pagination && pagination.totalPages > 1 && (
+                <nav className="mt-10 flex items-center justify-center gap-3 text-sm" aria-label="Category pagination">
+                    {page > 1 && <Link href={`/category/${params.slug}?page=${page - 1}`} className="btn btn-outline py-2">← Previous</Link>}
+                    <span className="text-neutral-500">Page {page} of {pagination.totalPages}</span>
+                    {page < pagination.totalPages && <Link href={`/category/${params.slug}?page=${page + 1}`} className="btn btn-outline py-2">Next →</Link>}
+                </nav>
             )}
         </div>
     );

@@ -41,7 +41,7 @@ export default function CategoryCard({ category, index = 0, isListPage = false }
                         <div className="w-[62%] lg:w-[64%] min-w-0 flex items-end justify-center pb-2">
                             {category.image && (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={category.image} alt={category.name} className="w-full h-[92%] object-contain object-bottom transition-transform duration-700 ease-out group-hover:scale-105" />
+                                <img src={category.image} alt={category.name} loading="lazy" decoding="async" className="w-full h-[92%] object-contain object-bottom transition-transform duration-700 ease-out group-hover:scale-105" />
                             )}
                         </div>
                     </div>
@@ -81,7 +81,7 @@ export default function CategoryCard({ category, index = 0, isListPage = false }
                             </p>
                         </div>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={category.image} alt={category.name} className="absolute left-1/2 -translate-x-1/2 bottom-[1%] md:bottom-[-4%] md:w-[68%] lg:bottom-auto lg:top-[56%] lg:-translate-y-1/2 w-[121%] sm:w-[98%] lg:w-[78%] max-w-[130%] object-contain transition-all duration-700 ease-out group-hover:scale-105 z-10" />
+                        <img src={category.image} alt={category.name} loading="lazy" decoding="async" className="absolute left-1/2 -translate-x-1/2 bottom-[1%] md:bottom-[-4%] md:w-[68%] lg:bottom-auto lg:top-[56%] lg:-translate-y-1/2 w-[121%] sm:w-[98%] lg:w-[78%] max-w-[130%] object-contain transition-all duration-700 ease-out group-hover:scale-105 z-10" />
                         <div className="absolute bottom-3 left-3 lg:bottom-9 lg:left-9 z-20">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-neutral-950 flex items-center justify-center text-white transition-all duration-300 group-hover:bg-neutral-800 group-hover:scale-105 shadow-md">
                                 <FiArrowRight size={18} className="sm:w-5 sm:h-5" />
@@ -101,7 +101,7 @@ export default function CategoryCard({ category, index = 0, isListPage = false }
                             </p>
                         </div>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={category.image} alt={category.name} className="absolute bottom-[5%] md:bottom-[8%] md:w-[72%] lg:bottom-[9%] left-1/2 -translate-x-1/2 w-[121%] sm:w-[98%] lg:w-[100%] xl:w-[105%] max-w-[116%] object-contain transition-all duration-700 ease-out group-hover:scale-105 group-hover:translate-y-[-4px] z-10" />
+                        <img src={category.image} alt={category.name} loading="lazy" decoding="async" className="absolute bottom-[5%] md:bottom-[8%] md:w-[72%] lg:bottom-[9%] left-1/2 -translate-x-1/2 w-[121%] sm:w-[98%] lg:w-[100%] xl:w-[105%] max-w-[116%] object-contain transition-all duration-700 ease-out group-hover:scale-105 group-hover:translate-y-[-4px] z-10" />
                         <div className="absolute bottom-3 left-3 lg:bottom-9 lg:left-9 z-20">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white transition-all duration-300 group-hover:bg-white/15 group-hover:scale-105 shadow-md">
                                 <FiArrowRight size={18} className="sm:w-5 sm:h-5" />
@@ -121,7 +121,7 @@ export default function CategoryCard({ category, index = 0, isListPage = false }
                             </p>
                         </div>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={category.image} alt={category.name} className={category.imageClass || 'absolute right-[-4%] lg:right-[-6%] bottom-1/2 lg:bottom-1/2 translate-y-[52%] lg:translate-y-[50%] w-[54%] sm:w-[52%] lg:w-[65%] max-w-none object-contain transition-all duration-700 ease-out group-hover:scale-105 group-hover:translate-x-1 z-10'} />
+                        <img src={category.image} alt={category.name} loading="lazy" decoding="async" className={category.imageClass || 'absolute right-[-4%] lg:right-[-6%] bottom-1/2 lg:bottom-1/2 translate-y-[52%] lg:translate-y-[50%] w-[54%] sm:w-[52%] lg:w-[65%] max-w-none object-contain transition-all duration-700 ease-out group-hover:scale-105 group-hover:translate-x-1 z-10'} />
                         <div className="absolute bottom-[-8px] left-[-8px] sm:bottom-[-12px] sm:left-[-12px] lg:bottom-[-14px] lg:left-[-14px] z-20">
                             <div className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 rounded-full bg-neutral-950 flex items-center justify-center text-white transition-all duration-300 group-hover:bg-neutral-800 group-hover:scale-105 shadow-md">
                                 <FiArrowRight size={14} className="sm:w-[15px] sm:h-[15px] lg:w-[18px] lg:h-[18px]" />

@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { fetchAllProducts, fetchFilters, buildCategoryTree } from '@/lib/catalog';
-import { ProductCard } from '@/components/ProductCard';
+import { ResponsiveProductGrid } from '@/components/ProductGrid';
 import { FilterBar } from '@/components/FilterBar';
 import { HeroSearch } from '@/components/HeroSearch';
 import { genericWaLink } from '@/lib/whatsapp';
@@ -25,18 +26,24 @@ export default async function CataloguePage({ searchParams }) {
     const category = searchParams?.category || '';
     const brand = searchParams?.brand || '';
     const sort = searchParams?.sort || '';
-    const page = Number(searchParams?.page) || 1;
+    const requestedPage = Number(searchParams?.page);
+    const page = Number.isFinite(requestedPage) ? Math.max(1, Math.floor(requestedPage)) : 1;
 
-    let products = [];
-    let pagination = null;
-    let filters = { categories: [], brands: [] };
-    let apiDown = false;
-    try {
-        const r = await fetchAllProducts({ q, categorySlug: category, brandId: brand, sort, page, limit: 24 });
-        products = r.products;
-        pagination = r.pagination;
-    } catch { apiDown = true; /* distinguish a real outage from a genuinely empty result set */ }
-    try { filters = await fetchFilters(); } catch { /* ignore */ }
+    const [productsResult, filtersResult] = await Promise.allSettled([
+        fetchAllProducts({ q, categorySlug: category, brandId: brand, sort, page, limit: 24 }),
+        fetchFilters(),
+    ]);
+    const products = productsResult.status === 'fulfilled' ? productsResult.value.products : [];
+    const pagination = productsResult.status === 'fulfilled' ? productsResult.value.pagination : null;
+    const filters = filtersResult.status === 'fulfilled' ? filtersResult.value : { categories: [], brands: [] };
+    const apiDown = productsResult.status === 'rejected';
+
+    if (pagination?.totalPages > 0 && page > pagination.totalPages) {
+        const params = new URLSearchParams();
+        Object.entries({ q, category, brand, sort, page: pagination.totalPages })
+            .forEach(([key, value]) => { if (value) params.set(key, String(value)); });
+        redirect(`/catalogue?${params.toString()}`);
+    }
 
     const count = pagination?.total ?? products.length;
     const allCats = (filters.categories || []).filter((c) => c.slug && !/test/i.test(c.name || ''));
@@ -137,9 +144,12 @@ export default async function CataloguePage({ searchParams }) {
 
                     {/* Results */}
                     {products.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {products.map((p) => <ProductCard key={p.id} product={p} />)}
-                        </div>
+                        <ResponsiveProductGrid
+                            products={products}
+                            mobileVariant="compact"
+                            desktopVariant="large"
+                            desktopColumns="catalogue"
+                        />
                     ) : apiDown ? (
                         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 py-20 text-center">
                             <h3 className="font-display text-xl font-bold text-ink">We couldn&apos;t load the catalogue</h3>

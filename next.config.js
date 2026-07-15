@@ -55,6 +55,9 @@ module.exports = (phase) => {
     }
 
     const nextConfig = {
+        // Keep `next dev` and `next build` from deleting/replacing each other's
+        // webpack packs when both are used during local development.
+        distDir: isDev ? '.next-dev' : '.next',
         reactStrictMode: true,
         poweredByHeader: false,
         images: {

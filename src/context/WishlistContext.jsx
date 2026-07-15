@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 
 // Minimal wishlist by product slug (localStorage). Guest-friendly, no login.
 const WishlistContext = createContext(null);
@@ -19,23 +19,33 @@ function reducer(state, action) {
 
 export function WishlistProvider({ children }) {
     const [slugs, dispatch] = useReducer(reducer, []);
-    const hydrated = useRef(false);
+    const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
         try {
             const raw = localStorage.getItem(KEY);
             if (raw) dispatch({ type: 'HYDRATE', slugs: JSON.parse(raw) });
         } catch { /* ignore */ }
-        hydrated.current = true;
+        setHydrated(true);
     }, []);
 
     useEffect(() => {
-        if (!hydrated.current) return;
+        if (!hydrated) return;
         try { localStorage.setItem(KEY, JSON.stringify(slugs)); } catch { /* ignore */ }
-    }, [slugs]);
+    }, [hydrated, slugs]);
+
+    useEffect(() => {
+        const syncWishlist = (event) => {
+            if (event.key !== KEY || event.newValue === null) return;
+            try { dispatch({ type: 'HYDRATE', slugs: JSON.parse(event.newValue) }); } catch { /* ignore */ }
+        };
+        window.addEventListener('storage', syncWishlist);
+        return () => window.removeEventListener('storage', syncWishlist);
+    }, []);
 
     const value = {
         slugs,
+        hydrated,
         has: (slug) => slugs.includes(slug),
         toggle: (slug) => dispatch({ type: 'TOGGLE', slug }),
         count: slugs.length,
