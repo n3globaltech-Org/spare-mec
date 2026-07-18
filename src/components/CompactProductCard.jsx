@@ -42,8 +42,11 @@ export function CompactProductCard({ product, index = 0 }) {
                     <h3 className="mt-1.5 line-clamp-2 min-h-[34px] text-[12px] font-bold leading-[1.4] text-neutral-900 sm:text-[13px] md:min-h-[40px] md:text-sm">
                         {product.name}
                     </h3>
+                    {product.partNumber && (
+                        <p className="mt-1 truncate font-mono text-[8.5px] leading-tight text-neutral-400 sm:text-[9px] md:text-[10px]">Part No: {product.partNumber}</p>
+                    )}
 
-                    <div className="mt-2.5 min-h-[38px] pr-10 sm:pr-11">
+                    <div className="mt-auto min-h-[38px] pr-10 pt-2.5 sm:pr-11">
                         {priceLabel ? (
                             <div className="flex flex-col">
                                 {compareAtLabel && <span className="text-[9px] leading-none text-neutral-400 line-through sm:text-[10px]">{compareAtLabel}</span>}
