@@ -34,7 +34,6 @@ export default function BrakeAnimation() {
     const imagesRef = useRef([]);
 
     const [nearViewport, setNearViewport] = useState(false);
-    const [loadProgress, setLoadProgress] = useState(0);
     const [isPreloading, setIsPreloading] = useState(true);
 
     const targetProgressRef = useRef(0);
@@ -67,8 +66,7 @@ export default function BrakeAnimation() {
             img.src = `/images/brake-sequence/ezgif-frame-${pad(i)}.webp`;
             img.onload = () => {
                 loadedCount++;
-                setLoadProgress(Math.floor((loadedCount / TOTAL_FRAMES) * 100));
-                if (loadedCount === TOTAL_FRAMES) setTimeout(() => setIsPreloading(false), 800);
+                if (loadedCount === TOTAL_FRAMES) setIsPreloading(false);
             };
             img.onerror = () => {
                 loadedCount++;
@@ -134,7 +132,7 @@ export default function BrakeAnimation() {
             const target = targetProgressRef.current;
             const current = currentProgressRef.current;
             const diff = target - current;
-            currentProgressRef.current += diff * 0.04;
+            currentProgressRef.current += diff * 0.025;
             if (Math.abs(diff) < 0.0001) currentProgressRef.current = target;
             if (Math.abs(currentProgressRef.current - lastReportedProgressRef.current) >= 0.01) {
                 lastReportedProgressRef.current = currentProgressRef.current;
@@ -169,44 +167,8 @@ export default function BrakeAnimation() {
     if (!isMobile) return null;
 
     return (
-        <div ref={containerRef} className="relative w-full bg-gradient-to-b from-neutral-50 via-neutral-100 to-neutral-50 select-none z-10" style={{ height: '260vh' }}>
+        <div ref={containerRef} className="relative w-full bg-gradient-to-b from-neutral-50 via-neutral-100 to-neutral-50 select-none z-10" style={{ height: '320vh' }}>
             <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between py-12 md:py-20">
-                <AnimatePresence>
-                    {isPreloading && (
-                        <motion.div
-                            initial={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.6, ease: 'easeInOut' }}
-                            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-zinc-950 z-50 px-6 text-center"
-                        >
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[100px] pointer-events-none" />
-                            <div className="relative z-10 max-w-md w-full flex flex-col items-center">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-500 mb-2">SM-AUTO PERFORMANCE LAB</span>
-                                <h3 className="text-2xl font-bold font-mechanic-header text-white italic tracking-wide uppercase mb-8">3D ENGINEERING SHOWROOM</h3>
-                                <div className="relative w-28 h-28 flex items-center justify-center mb-8">
-                                    <svg className="w-full h-full transform -rotate-90">
-                                        <circle cx="56" cy="56" r="48" className="stroke-white/5" strokeWidth="4" fill="transparent" />
-                                        <motion.circle
-                                            cx="56" cy="56" r="48" className="stroke-red-600" strokeWidth="4" fill="transparent"
-                                            strokeDasharray={2 * Math.PI * 48}
-                                            strokeDashoffset={2 * Math.PI * 48 * (1 - loadProgress / 100)}
-                                            transition={{ ease: 'easeOut' }}
-                                        />
-                                    </svg>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                        <span className="text-xl font-bold font-mechanic-header text-white italic">{loadProgress}%</span>
-                                        <span className="text-[8px] uppercase tracking-[0.1em] text-neutral-400 font-semibold mt-0.5">LOADED</span>
-                                    </div>
-                                </div>
-                                <div className="w-full bg-white/5 h-[2px] rounded-full overflow-hidden mb-3">
-                                    <motion.div className="bg-red-600 h-full rounded-full" style={{ width: `${loadProgress}%` }} transition={{ ease: 'easeOut' }} />
-                                </div>
-                                <p className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">PRELOADING HIGH-FIDELITY BINDINGS</p>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
                 <div className="absolute inset-0 w-full h-full bg-radial-glow pointer-events-none z-0" />
 
                 <div
@@ -234,7 +196,19 @@ export default function BrakeAnimation() {
                         className="relative w-full max-w-[1150px] aspect-[16/9] flex justify-center items-center transition-transform duration-75 ease-out"
                         style={{ transform: `perspective(1200px) rotateX(${cameraRotateX}deg) scale(${cameraScale}) translateY(${cameraTranslateY}px)` }}
                     >
-                        <canvas ref={canvasRef} className="w-full h-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.06)]" />
+                        {/* Show the first frame immediately; the canvas fades in once the sequence is ready. */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src="/images/brake-sequence/ezgif-frame-001.webp"
+                            alt="High-performance brake assembly"
+                            decoding="async"
+                            fetchPriority="high"
+                            className="absolute inset-0 h-full w-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
+                        />
+                        <canvas
+                            ref={canvasRef}
+                            className={`relative z-10 h-full w-full object-contain filter drop-shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-opacity duration-300 ${isPreloading ? 'opacity-0' : 'opacity-100'}`}
+                        />
                     </div>
                     <div
                         className="absolute bottom-[2%] md:bottom-[4%] left-1/2 -translate-x-1/2 w-[75%] sm:w-[65%] md:w-[54%] h-[20px] rounded-[50%] bg-neutral-950/20 blur-[18px] transition-all duration-100 ease-out pointer-events-none z-0"
