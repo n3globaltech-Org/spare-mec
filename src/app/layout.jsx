@@ -10,6 +10,14 @@ import { siteConfig } from '@/config/siteConfig';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://sparemec.ae';
 
+// Keep iOS Safari from changing the page scale when focusing compact form controls.
+export const viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+};
+
 export const metadata = {
     metadataBase: new URL(SITE_URL),
     title: {

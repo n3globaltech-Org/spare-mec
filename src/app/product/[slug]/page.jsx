@@ -83,7 +83,7 @@ export default async function ProductPage({ params }) {
     };
 
     return (
-        <div className="pb-24 md:pb-0">
+        <div>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
