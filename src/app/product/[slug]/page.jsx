@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { fetchProduct, fetchRelated } from '@/lib/catalog';
 import { formatMoney } from '@/lib/money';
 import { ProductActions } from '@/components/ProductActions';
-import { ProductCard } from '@/components/ProductCard';
+import { ResponsiveProductGrid } from '@/components/ProductGrid';
 import { ProductGallery } from '@/components/ProductGallery';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import AvailabilityBadge from '@/components/ui/AvailabilityBadge';
@@ -159,9 +159,7 @@ export default async function ProductPage({ params }) {
             {related.length > 0 && (
                 <div className="container-x py-8">
                     <h2 className="text-xl font-display font-bold mb-4">Related Products</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {related.map((p) => <ProductCard key={p.id} product={p} />)}
-                    </div>
+                    <ResponsiveProductGrid products={related} />
                 </div>
             )}
         </div>
