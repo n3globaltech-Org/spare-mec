@@ -43,7 +43,7 @@ export function CompactProductCard({ product, index = 0 }) {
                         {product.name}
                     </h3>
                     {product.partNumber && (
-                        <p className="mt-1 truncate font-mono text-[10.5px] leading-tight text-neutral-400 md:text-[11px]">Part No: {product.partNumber}</p>
+                        <p className="mt-1 truncate font-mono text-[10.5px] font-semibold leading-tight text-neutral-400 md:text-[11px]">Part No: {product.partNumber}</p>
                     )}
 
                     <div className="mt-auto min-h-[38px] pr-10 pt-2.5 sm:pr-11">

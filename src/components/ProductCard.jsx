@@ -57,7 +57,7 @@ export function LargeProductCard({ product, index = 0, forceCol = false }) {
                         <div className="min-w-0 flex-1">
                             <h3 className="text-[13px] font-bold leading-snug text-neutral-900 line-clamp-2 h-[36px]">{product.name}</h3>
                             {product.partNumber && (
-                                <p className="mt-0.5 truncate font-mono text-[10.5px] leading-tight text-neutral-400">Part No: {product.partNumber}</p>
+                                <p className="mt-0.5 truncate font-mono text-[10.5px] font-semibold leading-tight text-neutral-400">Part No: {product.partNumber}</p>
                             )}
                         </div>
                         <div className="flex flex-col items-end shrink-0 text-right -mt-0.5 min-w-[72px]">
@@ -86,7 +86,7 @@ export function LargeProductCard({ product, index = 0, forceCol = false }) {
                     <span className="text-[9px] md:text-[10px] font-bold text-neutral-500 uppercase tracking-widest block mb-1">{product.categoryName}</span>
                     <h3 className="mt-1.5 md:mt-2 text-xs md:text-sm font-bold leading-snug text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950 line-clamp-2 pr-6 h-[32px] md:h-[40px]">{product.name}</h3>
                     {product.partNumber && (
-                        <p className="mt-1 truncate font-mono text-[10.5px] leading-tight text-neutral-400 md:text-[11px]">Part No: {product.partNumber}</p>
+                        <p className="mt-1 truncate font-mono text-[10.5px] font-semibold leading-tight text-neutral-400 md:text-[11px]">Part No: {product.partNumber}</p>
                     )}
                     <div className={`${product.partNumber ? 'mt-1' : 'mt-1.5 md:mt-2'} min-h-[17px]`}>
                         {hasRating && (
