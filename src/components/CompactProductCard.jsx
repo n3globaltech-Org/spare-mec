@@ -40,10 +40,10 @@ export function CompactProductCard({ product, index = 0 }) {
                     <span className="truncate text-[8px] font-extrabold uppercase tracking-[0.14em] text-neutral-500 sm:text-[9px]">
                         {product.categoryName}
                     </span>
+                    <ProductPartNumber value={product.partNumber} className="mt-1.5" valueClassName="text-sm" desktopProminent />
                     <h3 className="mt-1.5 line-clamp-2 min-h-[34px] text-[12px] font-bold leading-[1.4] text-neutral-900 sm:text-[13px] md:min-h-[40px] md:text-sm">
                         {product.name}
                     </h3>
-                    <ProductPartNumber value={product.partNumber} className="mt-1 text-[12px] sm:text-[13px] md:text-sm" />
 
                     <div className="mt-auto min-h-[38px] pr-10 pt-2.5 sm:pr-11">
                         {priceLabel ? (

@@ -12,7 +12,7 @@ const featuredCarImg = '/assets/sections/featured_car.png';
 // the initial SSR HTML (good for SEO) and there's no client-side fetch.
 export default function FeaturedProducts({ products = [], variant = 'large' }) {
     const list = products.slice(0, 6);
-    const compact = variant === 'compact';
+    const mobileCompact = variant === 'compact';
     const sliderRef = useRef(null);
 
     const handleScroll = (direction) => {
@@ -58,16 +58,14 @@ export default function FeaturedProducts({ products = [], variant = 'large' }) {
                             </Link>
                         </div>
 
-                        {!compact && (
-                            <div className="hidden md:flex items-center gap-2.5 self-end md:self-auto mb-1 md:mb-0">
-                                <button onClick={() => handleScroll('left')} aria-label="Previous slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-all duration-300 md:bg-neutral-50 md:border-neutral-200/80 md:text-neutral-600 md:hover:bg-neutral-100">
-                                    <FiArrowLeft size={18} />
-                                </button>
-                                <button onClick={() => handleScroll('right')} aria-label="Next slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FBEE21] text-neutral-900 shadow-sm transition-all duration-300 hover:scale-105 hover:bg-[#e0d51d]">
-                                    <FiArrowRight size={18} />
-                                </button>
-                            </div>
-                        )}
+                        <div className="hidden md:flex items-center gap-2.5 self-end md:self-auto mb-1 md:mb-0">
+                            <button onClick={() => handleScroll('left')} aria-label="Previous slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-all duration-300 md:bg-neutral-50 md:border-neutral-200/80 md:text-neutral-600 md:hover:bg-neutral-100">
+                                <FiArrowLeft size={18} />
+                            </button>
+                            <button onClick={() => handleScroll('right')} aria-label="Next slide" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FBEE21] text-neutral-900 shadow-sm transition-all duration-300 hover:scale-105 hover:bg-[#e0d51d]">
+                                <FiArrowRight size={18} />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 md:hidden z-20">
@@ -77,24 +75,20 @@ export default function FeaturedProducts({ products = [], variant = 'large' }) {
                     </div>
                 </div>
 
-                {/* DESKTOP/TABLET: large cards keep the showroom carousel; compact cards use a four-column grid. */}
+                {/* DESKTOP/TABLET: the Customer Favourites card design in a single horizontal row. */}
                 <div className="hidden md:block relative overflow-visible">
-                    {compact ? (
-                        <ProductGrid products={list} variant={variant} />
-                    ) : (
-                        <div ref={sliderRef} className="flex gap-6 overflow-x-auto no-scrollbar pb-8 scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                            {list.map((p, i) => (
-                                <div key={p.slug} className="w-[280px] shrink-0 select-none">
-                                    <ProductCardByVariant variant={variant} product={p} index={i} forceCol />
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <div ref={sliderRef} className="flex gap-6 overflow-x-auto no-scrollbar pb-8 scroll-smooth" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {list.map((p, i) => (
+                            <div key={p.slug} className="flex w-[280px] shrink-0 select-none">
+                                <ProductCardByVariant variant="compact" product={p} index={i} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* MOBILE: the section variant alone controls one-column large or two-column compact. */}
                 <div className="mt-4 md:hidden">
-                    <ProductGrid products={list.slice(0, compact ? 6 : 4)} variant={variant} />
+                    <ProductGrid products={list.slice(0, mobileCompact ? 6 : 4)} variant={variant} />
                 </div>
 
                 <div className="mt-6 flex justify-center">

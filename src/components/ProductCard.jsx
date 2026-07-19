@@ -56,8 +56,8 @@ export function LargeProductCard({ product, index = 0, forceCol = false }) {
 
                     <div className="flex justify-between items-start w-full mt-1 gap-2">
                         <div className="min-w-0 flex-1">
+                            <ProductPartNumber value={product.partNumber} className="mb-1.5" valueClassName="text-[15px]" />
                             <h3 className="text-[13px] font-bold leading-snug text-neutral-900 line-clamp-2 h-[36px]">{product.name}</h3>
-                            <ProductPartNumber value={product.partNumber} className="mt-1 text-[13px]" />
                         </div>
                         <div className="flex flex-col items-end shrink-0 text-right -mt-0.5 min-w-[72px]">
                             {priceLabel ? (
@@ -83,8 +83,8 @@ export function LargeProductCard({ product, index = 0, forceCol = false }) {
                 {/* DESKTOP / FORCED-VERTICAL VIEW BODY */}
                 <div className={`${forceCol ? 'flex animate-fadeIn' : 'hidden md:flex'} flex-1 flex-col p-4 md:p-4.5 relative`}>
                     <span className="text-[9px] md:text-[10px] font-bold text-neutral-500 uppercase tracking-widest block mb-1">{product.categoryName}</span>
-                    <h3 className="mt-1.5 md:mt-2 text-xs md:text-sm font-bold leading-snug text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950 line-clamp-2 pr-6 h-[32px] md:h-[40px]">{product.name}</h3>
-                    <ProductPartNumber value={product.partNumber} className="mt-1 text-xs md:text-sm" />
+                    <ProductPartNumber value={product.partNumber} className="mt-1" valueClassName="text-[15px]" desktopProminent />
+                    <h3 className={`${product.partNumber ? 'mt-1.5' : 'mt-1.5 md:mt-2'} text-xs md:text-sm font-bold leading-snug text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950 line-clamp-2 pr-6 h-[32px] md:h-[40px]`}>{product.name}</h3>
                     <div className={`${product.partNumber ? 'mt-1' : 'mt-1.5 md:mt-2'} min-h-[17px]`}>
                         {hasRating && (
                             <StarRating rating={rating} size={12} starClassName="text-amber-400" count={reviewCount} countClassName="text-[11px] text-neutral-500 font-semibold" />
